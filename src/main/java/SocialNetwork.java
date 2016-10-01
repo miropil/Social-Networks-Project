@@ -1,15 +1,13 @@
 package main.java;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ilyami on 10/1/2016.
  */
 public class SocialNetwork implements Graph {
     private HashMap<Integer, Node> nodes;
-    private HashSet<Integer> borderNodes;
+    private Queue<Integer> borderNodes = new LinkedList<Integer>();
     private HashSet<Integer> switchedNodes;
 
     public SocialNetwork() {
@@ -55,21 +53,28 @@ public class SocialNetwork implements Graph {
         switchedNodes.addAll(borderNodes);
         boolean exit = false;
         int cascadesPerformed = 0;
+        int cascadeLength = borderNodes.size();
+        int count = 0;
 
         while (!borderNodes.isEmpty() && !exit){
             exit = true;
-            for (int node: borderNodes){
-                if (visit(nodes.get(node), q)){
-                    exit = false;
-                }
+            int node = borderNodes.poll();
+
+            count++;
+            if (visit(nodes.get(node), q)){
+                  exit = false;
             }
-            if (cascades > 0){
+
+            if (cascades > 0 && count >= cascadeLength){
                 cascadesPerformed++;
+                cascadeLength = borderNodes.size();
+                count = 0;
                 if (cascadesPerformed >= cascades){
                     exit = true;
                 }
             }
         }
+        System.out.println("Number of cascades performed: " + cascadesPerformed);
         return switchedNodes;
     }
 
@@ -81,13 +86,13 @@ public class SocialNetwork implements Graph {
                 visitedFriends++;
                 n.doSwitch();
                 switchedNodes.add(n.getId());
-                if (willSwitch < 1){
+                if (willSwitch < 1 && !borderNodes.contains(n.getId())){
                     borderNodes.add(n.getId());
                 }
             }
         }
-        if (visitedFriends == node.getFriends().size()){
-            borderNodes.remove(node.getId());
+        if (visitedFriends != node.getFriends().size() && !borderNodes.contains(node.getId())){
+            borderNodes.add(node.getId());
         }
 
         return visitedFriends != 0;
@@ -98,9 +103,13 @@ public class SocialNetwork implements Graph {
             throw new IllegalArgumentException("Node " + node + "not in the network and thus can not be a starter node");
         }
         if (borderNodes == null){
-            borderNodes = new HashSet<Integer>();
-        }
+            borderNodes = new LinkedList<Integer>();
+            }
         borderNodes.add(node);
         nodes.get(node).doSwitch();
+    }
+
+    public Queue<Integer>getBorderNodes(){
+        return borderNodes;
     }
 }
