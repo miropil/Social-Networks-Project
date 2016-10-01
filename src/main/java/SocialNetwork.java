@@ -8,6 +8,7 @@ import java.util.HashSet;
  *
  */
 public class SocialNetwork implements Graph{
+    private int cascadesNumber;
     @Override
     public void addVertex(int num) {
 
@@ -20,6 +21,14 @@ public class SocialNetwork implements Graph{
 
     @Override
     public HashMap<Integer, HashSet<Integer>> exportGraph() {
+        return null;
+    }
+
+    public void setCascadesNumber(int cascades) {
+        cascadesNumber = cascades;
+    }
+
+    public SocialNetwork cascade() {
         return null;
     }
 }
