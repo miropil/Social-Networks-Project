@@ -17,27 +17,29 @@ public class Sanity {
     private SocialNetwork testData;
     private HashSet<Integer> expected;
     private int cascadesNum = 0;
+    private double q = 0.5;
     @Test
     public void runTest() throws Exception {
         System.out.println("Running test " + this.getClass().toString());
-        HashSet<Integer> actual = testData.cascade(cascadesNum);
+        HashSet<Integer> actual = testData.cascade(cascadesNum, q);
         Assert.assertEquals(
-                "Comparing expected\n" +
-                        expected.toString() +
-                        "with actual\n" +
-                        actual.toString(),
+                "Failed",
                 expected,
                 actual
         );
+        System.out.println("Pass");
     }
 
     @Before
     public void setUp(){
+        testData = new SocialNetwork();
         loadTestData();
+        testData.addStartingNode(0);
         setExpectedOutput();
     }
 
     private void setExpectedOutput() {
+        expected = new HashSet<Integer>();
         expected.add(0);
         expected.add(1);
     }
