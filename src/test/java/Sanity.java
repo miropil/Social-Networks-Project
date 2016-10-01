@@ -7,6 +7,7 @@ import util.GraphLoader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.InputMismatchException;
+import java.util.List;
 
 /**
  * Created by ilyami on 10/1/2016.
@@ -14,13 +15,12 @@ import java.util.InputMismatchException;
  */
 public class Sanity {
     private SocialNetwork testData;
-    private HashMap<Integer, HashSet<Integer>> expected;
+    private HashSet<Integer> expected;
     private int cascadesNum = 0;
     @Test
     public void runTest() throws Exception {
         System.out.println("Running test " + this.getClass().toString());
-        testData.setCascadesNumber(cascadesNum);
-        HashMap<Integer, HashSet<Integer>> actual = testData.cascade().exportGraph();
+        HashSet<Integer> actual = testData.cascade(cascadesNum);
         Assert.assertEquals(
                 "Comparing expected\n" +
                         expected.toString() +
@@ -38,10 +38,8 @@ public class Sanity {
     }
 
     private void setExpectedOutput() {
-        expected.put(0, new HashSet<Integer>());
-        expected.get(0).add(1);
-        expected.put(1, new HashSet<Integer>());
-        expected.get(1).add(0);
+        expected.add(0);
+        expected.add(1);
     }
 
     private void loadTestData() {
