@@ -3,10 +3,10 @@ package main.java;
 import java.util.*;
 
 /**
- * This class represents social network data in form of adjacency matrix
+ * This class represents social network data in form of adjacency list
  */
 public class SocialNetwork implements Graph {
-    //Adjacency matrix of the network
+    //Adjacency list of the network
     private HashMap<Integer, Node> nodes;
     // Border nodes of the cascade
     private Border borderNodes = new Border();
