@@ -1,17 +1,15 @@
 package main.java;
 
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
-
 import java.util.*;
 
 /**
  * Created by ilyami on 10/1/2016.
+ *
  */
 public class SocialNetwork implements Graph {
     private HashMap<Integer, Node> nodes;
-    private Queue<Integer> borderNodes = new LinkedList<Integer>();
+    private Border borderNodes = new Border();
     private HashSet<Integer> switchedNodes;
-    private HashMap<Integer, Boolean> borderStatus;
     public SocialNetwork() {
         nodes = new HashMap<Integer, Node>();
     }
@@ -52,21 +50,15 @@ public class SocialNetwork implements Graph {
 
     public HashSet<Integer> cascade(double q) {
         switchedNodes = new HashSet<>();
-        switchedNodes.addAll(borderNodes);
-        borderStatus = new HashMap<Integer, Boolean>();
-        for (int n: switchedNodes){
-            borderStatus.put(n, true);
-        }
+        switchedNodes.addAll(borderNodes.getQueue());
         while (!borderNodes.isEmpty()){
             int node = borderNodes.poll();
-            borderStatus.remove(node);
             visit(nodes.get(node), q);
-            System.out.println(borderStatus);
-            System.out.println(borderNodes);
-            if (!borderStatus.containsValue(true)){
+            if (!borderNodes.isActive()){
                 break;
             }
         }
+        borderNodes = null;
         return switchedNodes;
     }
 
@@ -74,23 +66,21 @@ public class SocialNetwork implements Graph {
         int overallSwitchedFriends = 0;
         int switchedFriends = 0;
         for (Node n: node.getFriends()){
-            double willSwitch = n.willSwitch();
-            if(willSwitch >= q){
+            double switchedPortion = n.checkToSwitch();
+            if(switchedPortion >= q){
                 overallSwitchedFriends ++;
                 if (!n.hasSwitched()){
                     n.doSwitch();
                     switchedFriends++;
                 }
                 switchedNodes.add(n.getId());
-                if (willSwitch < 1 && !borderNodes.contains(n.getId())){
-                    borderNodes.add(n.getId());
-                    borderStatus.put(n.getId(), true);
+                if (switchedPortion < 1 && !borderNodes.getQueue().contains(n.getId())){
+                    borderNodes.addNode(n.getId(), true);
                 }
             }
         }
         if (overallSwitchedFriends != node.getFriends().size()){
-            borderNodes.add(node.getId());
-            borderStatus.put(node.getId(), switchedFriends != 0);
+            borderNodes.addNode(node.getId(), switchedFriends != 0);
         }
 
         return switchedFriends != 0;
@@ -101,9 +91,9 @@ public class SocialNetwork implements Graph {
             throw new IllegalArgumentException("Node " + node + "not in the network and thus can not be a starter node");
         }
         if (borderNodes == null){
-            borderNodes = new LinkedList<Integer>();
+            borderNodes = new Border();
             }
-        borderNodes.add(node);
+        borderNodes.addNode(node, true);
         nodes.get(node).doSwitch();
     }
 
@@ -112,6 +102,6 @@ public class SocialNetwork implements Graph {
     }
 
     public Queue<Integer>getBorderNodes(){
-        return borderNodes;
+        return borderNodes.getQueue();
     }
 }

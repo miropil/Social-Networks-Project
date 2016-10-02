@@ -24,7 +24,7 @@ public class Node {
         return friends;
     }
 
-    public double willSwitch(){
+    public double checkToSwitch(){
         // addressing corner case of single node selected as a starter node
         if (friends.size() == 0){
             return 1;
