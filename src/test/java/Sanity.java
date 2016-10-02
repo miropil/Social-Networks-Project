@@ -6,10 +6,9 @@ import org.junit.Test;
 import util.GraphLoader;
 
 import java.util.HashSet;
-import java.util.StringJoiner;
 
 /**
- * Created by ilyami on 10/1/2016.
+ *
  *
  */
 public class Sanity {
@@ -38,8 +37,10 @@ public class Sanity {
         setTestData();
         loadTestData();
         setExpectedOutput();
-        for (int node: startingNodes){
-            testData.addStartingNode(node);
+        if (startingNodes != null){
+            for (int node: startingNodes) {
+                testData.addStartingNode(node);
+            }
         }
 
     }

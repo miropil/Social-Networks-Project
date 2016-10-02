@@ -3,12 +3,13 @@ package main.java;
 import java.util.HashSet;
 
 /**
- * Created by ilyami on 10/1/2016.
+ * This object implements network node, node neighbors are stored as Node objects
  *
  */
 public class Node {
     private int id;
     private HashSet<Node> friends;
+    //attribute indicating whether node has switched or not
     private boolean switched = false;
 
     public Node(int id) {
@@ -24,7 +25,11 @@ public class Node {
         return friends;
     }
 
-    public double checkToSwitch(){
+    /**
+     * Calculates a portion of the node neighbors who has switched out of all node neighbors
+     * @return double (switched neighbors number/total neighbors number)
+     */
+    public double checkSwitchedPortion(){
         // addressing corner case of single node selected as a starter node
         if (friends.size() == 0){
             return 1;

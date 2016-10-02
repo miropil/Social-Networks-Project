@@ -3,13 +3,17 @@ package main.java;
 import java.util.*;
 
 /**
- * Created by ilyami on 10/1/2016.
- *
+ * This class represents social network data in form of adjacency matrix
  */
 public class SocialNetwork implements Graph {
+    //Adjacency matrix of the network
     private HashMap<Integer, Node> nodes;
+    // Border nodes of the cascade
     private Border borderNodes = new Border();
+    // Set of nodes switched to new feature
     private HashSet<Integer> switchedNodes;
+
+    //Constructor
     public SocialNetwork() {
         nodes = new HashMap<Integer, Node>();
     }
@@ -40,68 +44,92 @@ public class SocialNetwork implements Graph {
         }
         addVertex(from);
         addVertex(to);
+
+        //Adding nodes in both directions since data on facebook is non-directional
         nodes.get(from).getFriends().add(nodes.get(to));
+        nodes.get(to).getFriends().add(nodes.get(from));
     }
 
-    @Override
-    public HashMap<Integer, HashSet<Integer>> exportGraph() {
-        return null;
-    }
-
+    /**
+     * This mthod will simulate a cascade throught the network and return a set of all nodes who switched
+     *
+     * @param q double between 0 and 1
+     * @return
+     */
     public HashSet<Integer> cascade(double q) {
+        if (q >= 1 || q < 0) {
+            throw new IllegalArgumentException("q should be less than one and grater than zero");
+        }
+        // initializing switched nodes with initiating nodes
         switchedNodes = new HashSet<>();
         switchedNodes.addAll(borderNodes.getQueue());
-        while (!borderNodes.isEmpty()){
+        while (!borderNodes.isEmpty()) {
+            // here node is removed from border queue
+            // will be re added in visit method only of it is still on the border after visit runs
             int node = borderNodes.poll();
             visit(nodes.get(node), q);
-            if (!borderNodes.isActive()){
+            // Checking if some nodes switched at the last cascade step
+            if (!borderNodes.isActive()) {
+                // If not cascade had stopped
                 break;
             }
         }
+        // zeroing borderNodes
         borderNodes = null;
         return switchedNodes;
     }
 
-    private boolean visit(Node node, double q){
+    /**
+     * This method will iterate through all the node neighbors and switch those passing the threshold
+     *
+     * @param node border node to check all its neighbors
+     * @param q    reward threshold
+     */
+
+    private void visit(Node node, double q) {
+        // number of neighbors who switched overall
         int overallSwitchedFriends = 0;
+        // number of neighbor who switch during this call of the method
         int switchedFriends = 0;
-        for (Node n: node.getFriends()){
-            double switchedPortion = n.checkToSwitch();
-            if(switchedPortion >= q){
-                overallSwitchedFriends ++;
-                if (!n.hasSwitched()){
+        for (Node n : node.getFriends()) {
+            double switchedPortion = n.checkSwitchedPortion();
+            if (switchedPortion >= q) {
+                overallSwitchedFriends++;
+
+                if (!n.hasSwitched()) {
                     n.doSwitch();
                     switchedFriends++;
                 }
+
                 switchedNodes.add(n.getId());
-                if (switchedPortion < 1 && !borderNodes.getQueue().contains(n.getId())){
+                if (switchedPortion < 1) {
+                    // No need to check if node is already in the orderNodes, Border object will do this
                     borderNodes.addNode(n.getId(), true);
                 }
             }
         }
-        if (overallSwitchedFriends != node.getFriends().size()){
+        if (overallSwitchedFriends != node.getFriends().size()) {
+            // re-adding node back to the border queue it is still on the border
             borderNodes.addNode(node.getId(), switchedFriends != 0);
         }
 
-        return switchedFriends != 0;
     }
 
-    public void addStartingNode(int node){
-        if (nodes.get(node) == null){
+    /**
+     * Adding initiating node to the initiating nodes set
+     * Should be ran at least once before cascade is called
+     * Be sure that you added all initiating nodes for your simulation before running cascade
+     * @param node
+     */
+    public void addStartingNode(int node) {
+        if (nodes.get(node) == null) {
             throw new IllegalArgumentException("Node " + node + "not in the network and thus can not be a starter node");
         }
-        if (borderNodes == null){
+        if (borderNodes == null) {
             borderNodes = new Border();
-            }
+        }
         borderNodes.addNode(node, true);
         nodes.get(node).doSwitch();
     }
 
-    public Set<Integer> getNodes(){
-        return nodes.keySet();
-    }
-
-    public Queue<Integer>getBorderNodes(){
-        return borderNodes.getQueue();
-    }
 }

@@ -1,7 +1,7 @@
 import java.util.HashSet;
 
 /**
- * Created by ilyami on 10/1/2016.
+ *
  *
  */
 public class AllSwitch extends Sanity {

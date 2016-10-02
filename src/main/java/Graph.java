@@ -1,7 +1,7 @@
 package main.java;
 
 /**
- * Created by ilyami on 10/1/2016.
+ *
  *
  */
 import java.util.HashMap;
@@ -13,12 +13,4 @@ public interface Graph {
 
     /* Creates an edge from the first vertex to the second. */
     public void addEdge(int from, int to);
-
-    /* Return the graph's connections in a readable format.
-     * The keys in this HashMap are the vertices in the graph.
-     * The values are the nodes that are reachable via a directed
-     * edge from the corresponding key.
-	 * The returned representation ignores edge weights and
-	 * multi-edges.  */
-    public HashMap<Integer, HashSet<Integer>> exportGraph();
 }

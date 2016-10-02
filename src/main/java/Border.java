@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Queue;
 
 /**
- * Created by ilyami on 10/2/2016.
+ * This object will store border nodes queue and provide information about border nodes being active
+ * Border nodes queue will be also a set meaning that if node is already in the queue it won't be added again
  *
  */
 public class Border {
@@ -18,15 +19,26 @@ public class Border {
         activityMap = new HashMap<Integer, Boolean>();
     }
 
+    /**
+     * Adds node to the queue and updates its value in activity map
+     * Node will be added only if it is not in the queue yet
+     * @param n int node id
+     * @param nodeActive boolean indicates if nodes was active during last cascade step (meaning some of it's neighbors had switched during this step)
+     */
+
     public void addNode(int n, boolean nodeActive){
-        queue.add(n);
-        activityMap.put(n, nodeActive);
+
+        if (activityMap.get(n) == null){
+            queue.add(n);
+            activityMap.put(n, nodeActive);
+        }
     }
 
-    public int element(){
-        return queue.element();
-    }
-
+    /**
+     * Performs same operation as Queue interface method
+     * Removes element from activityMap as well
+     * @return Integer
+     */
     public Integer poll(){
         Integer el = queue.poll();
         if (el == null){
@@ -36,14 +48,27 @@ public class Border {
         return el;
     }
 
+    /**
+     * Returns object's queue
+     * @return Queue
+     */
+
     public Queue<Integer> getQueue(){
         return queue;
     }
+
+    /**
+     * Similr to Queue interface method
+     * @return Boolean
+     */
 
     public Boolean isEmpty(){
         return queue.isEmpty();
     }
 
+    /*
+    Checks if any of the queue elements is active
+     */
     public Boolean isActive(){
         return activityMap.containsValue(true);
     }
