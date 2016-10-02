@@ -1,5 +1,7 @@
 package main.java;
 
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+
 import java.util.*;
 
 /**
@@ -9,7 +11,7 @@ public class SocialNetwork implements Graph {
     private HashMap<Integer, Node> nodes;
     private Queue<Integer> borderNodes = new LinkedList<Integer>();
     private HashSet<Integer> switchedNodes;
-
+    private HashMap<Integer, Boolean> borderStatus;
     public SocialNetwork() {
         nodes = new HashMap<Integer, Node>();
     }
@@ -48,54 +50,50 @@ public class SocialNetwork implements Graph {
         return null;
     }
 
-    public HashSet<Integer> cascade(int cascades, double q) {
+    public HashSet<Integer> cascade(double q) {
         switchedNodes = new HashSet<>();
         switchedNodes.addAll(borderNodes);
-        boolean exit = false;
-        int cascadesPerformed = 0;
-        int cascadeLength = borderNodes.size();
-        int count = 0;
-
-        while (!borderNodes.isEmpty() && !exit){
-            exit = true;
+        borderStatus = new HashMap<Integer, Boolean>();
+        for (int n: switchedNodes){
+            borderStatus.put(n, true);
+        }
+        while (!borderNodes.isEmpty()){
             int node = borderNodes.poll();
-
-            count++;
-            if (visit(nodes.get(node), q)){
-                  exit = false;
-            }
-
-            if (cascades > 0 && count >= cascadeLength){
-                cascadesPerformed++;
-                cascadeLength = borderNodes.size();
-                count = 0;
-                if (cascadesPerformed >= cascades){
-                    exit = true;
-                }
+            borderStatus.remove(node);
+            visit(nodes.get(node), q);
+            System.out.println(borderStatus);
+            System.out.println(borderNodes);
+            if (!borderStatus.containsValue(true)){
+                break;
             }
         }
-        System.out.println("Number of cascades performed: " + cascadesPerformed);
         return switchedNodes;
     }
 
     private boolean visit(Node node, double q){
-        int visitedFriends = 0;
+        int overallSwitchedFriends = 0;
+        int switchedFriends = 0;
         for (Node n: node.getFriends()){
             double willSwitch = n.willSwitch();
-            if(willSwitch >= q ){
-                visitedFriends++;
-                n.doSwitch();
+            if(willSwitch >= q){
+                overallSwitchedFriends ++;
+                if (!n.hasSwitched()){
+                    n.doSwitch();
+                    switchedFriends++;
+                }
                 switchedNodes.add(n.getId());
                 if (willSwitch < 1 && !borderNodes.contains(n.getId())){
                     borderNodes.add(n.getId());
+                    borderStatus.put(n.getId(), true);
                 }
             }
         }
-        if (visitedFriends != node.getFriends().size() && !borderNodes.contains(node.getId())){
+        if (overallSwitchedFriends != node.getFriends().size()){
             borderNodes.add(node.getId());
+            borderStatus.put(node.getId(), switchedFriends != 0);
         }
 
-        return visitedFriends != 0;
+        return switchedFriends != 0;
     }
 
     public void addStartingNode(int node){
@@ -107,6 +105,10 @@ public class SocialNetwork implements Graph {
             }
         borderNodes.add(node);
         nodes.get(node).doSwitch();
+    }
+
+    public Set<Integer> getNodes(){
+        return nodes.keySet();
     }
 
     public Queue<Integer>getBorderNodes(){

@@ -15,7 +15,6 @@ import java.util.StringJoiner;
 public class Sanity {
     SocialNetwork testData = new SocialNetwork();
     HashSet<Integer> expected;
-    private int cascadesNum = 0;
     private double q = 0.5;
     private String fileName = "src/test/resources/one_edge.txt";
     private HashSet<Integer> startingNodes;
@@ -25,7 +24,7 @@ public class Sanity {
         if (startingNodes == null || startingNodes.isEmpty()){
             testData.addStartingNode(0);
         }
-        HashSet<Integer> actual = testData.cascade(cascadesNum, q);
+        HashSet<Integer> actual = testData.cascade(q);
         Assert.assertEquals(
                 "Failed",
                 expected,
@@ -36,9 +35,9 @@ public class Sanity {
 
     @Before
     public void setUp(){
-        this.setTestData();
-        this.loadTestData();
-        this.setExpectedOutput();
+        setTestData();
+        loadTestData();
+        setExpectedOutput();
         for (int node: startingNodes){
             testData.addStartingNode(node);
         }
@@ -57,10 +56,6 @@ public class Sanity {
     }
 
     public void setTestData(){
-    }
-
-    public void setCascadesNumber(int i){
-        cascadesNum = i;
     }
 
     public void setQ(double que){
