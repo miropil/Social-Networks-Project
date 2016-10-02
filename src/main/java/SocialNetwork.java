@@ -1,14 +1,19 @@
 package main.java;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by ilyami on 10/1/2016.
+ *
  */
 public class SocialNetwork implements Graph {
     private HashMap<Integer, Node> nodes;
+    private Border borderNodes = new Border();
+    private HashSet<Integer> switchedNodes;
+    public SocialNetwork() {
+        nodes = new HashMap<Integer, Node>();
+    }
+
 
     @Override
     public void addVertex(int num) {
@@ -17,8 +22,10 @@ public class SocialNetwork implements Graph {
                     "Node id should be a non negative integer. " + num + " is not a legal argument");
         }
         if (nodes.get(num) != null) {
-            nodes.put(num, new Node(num));
+            return;
         }
+        nodes.put(num, new Node(num));
+
     }
 
     @Override
@@ -31,12 +38,8 @@ public class SocialNetwork implements Graph {
             throw new IllegalArgumentException(
                     "Node id should be a non negative integer. " + to + " is not a legal argument");
         }
-        if (nodes.get(from) == null) {
-            throw new IllegalArgumentException("Node " + from + "is not a part of the network");
-        }
-        if (nodes.get(to) == null) {
-            throw new IllegalArgumentException("Node " + to + "is not a part of the network");
-        }
+        addVertex(from);
+        addVertex(to);
         nodes.get(from).getFriends().add(nodes.get(to));
     }
 
@@ -45,7 +48,60 @@ public class SocialNetwork implements Graph {
         return null;
     }
 
-    public HashSet<Integer> cascade(int cascades) {
-        return null;
+    public HashSet<Integer> cascade(double q) {
+        switchedNodes = new HashSet<>();
+        switchedNodes.addAll(borderNodes.getQueue());
+        while (!borderNodes.isEmpty()){
+            int node = borderNodes.poll();
+            visit(nodes.get(node), q);
+            if (!borderNodes.isActive()){
+                break;
+            }
+        }
+        borderNodes = null;
+        return switchedNodes;
+    }
+
+    private boolean visit(Node node, double q){
+        int overallSwitchedFriends = 0;
+        int switchedFriends = 0;
+        for (Node n: node.getFriends()){
+            double switchedPortion = n.checkToSwitch();
+            if(switchedPortion >= q){
+                overallSwitchedFriends ++;
+                if (!n.hasSwitched()){
+                    n.doSwitch();
+                    switchedFriends++;
+                }
+                switchedNodes.add(n.getId());
+                if (switchedPortion < 1 && !borderNodes.getQueue().contains(n.getId())){
+                    borderNodes.addNode(n.getId(), true);
+                }
+            }
+        }
+        if (overallSwitchedFriends != node.getFriends().size()){
+            borderNodes.addNode(node.getId(), switchedFriends != 0);
+        }
+
+        return switchedFriends != 0;
+    }
+
+    public void addStartingNode(int node){
+        if (nodes.get(node) == null){
+            throw new IllegalArgumentException("Node " + node + "not in the network and thus can not be a starter node");
+        }
+        if (borderNodes == null){
+            borderNodes = new Border();
+            }
+        borderNodes.addNode(node, true);
+        nodes.get(node).doSwitch();
+    }
+
+    public Set<Integer> getNodes(){
+        return nodes.keySet();
+    }
+
+    public Queue<Integer>getBorderNodes(){
+        return borderNodes.getQueue();
     }
 }

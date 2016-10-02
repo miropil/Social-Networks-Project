@@ -13,6 +13,7 @@ public class Node {
 
     public Node(int id) {
         this.id = id;
+        friends = new HashSet<Node>();
     }
 
     public int getId(){
@@ -23,10 +24,10 @@ public class Node {
         return friends;
     }
 
-    public boolean willSwitch(double q){
+    public double checkToSwitch(){
         // addressing corner case of single node selected as a starter node
         if (friends.size() == 0){
-            return true;
+            return 1;
         }
         int switchedCount = 0;
         for (Node n: friends){
@@ -34,7 +35,7 @@ public class Node {
                 switchedCount++;
             }
         }
-        return switchedCount/friends.size() > q;
+        return (double) switchedCount/ (double)friends.size();
     }
 
     public boolean hasSwitched(){
