@@ -7,11 +7,11 @@ import java.util.*;
  */
 public class SocialNetwork implements Graph {
     //Adjacency list of the network
-    private HashMap<Integer, Node> nodes;
+    protected HashMap<Integer, Node> nodes;
     // Border nodes of the cascade
-    private Border borderNodes = new Border();
+    protected Border borderNodes = new Border();
     // Set of nodes switched to new feature
-    private HashSet<Integer> switchedNodes;
+    protected HashSet<Integer> switchedNodes;
 
     //Constructor
     public SocialNetwork() {
@@ -74,8 +74,8 @@ public class SocialNetwork implements Graph {
                 break;
             }
         }
-        // zeroing borderNodes
-        borderNodes = null;
+//         zeroing borderNodes
+//        borderNodes = null;
         return switchedNodes;
     }
 

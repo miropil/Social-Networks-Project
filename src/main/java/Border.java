@@ -1,9 +1,6 @@
 package main.java;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * This object will store border nodes queue and provide information about border nodes being active
@@ -71,6 +68,24 @@ public class Border {
      */
     public Boolean isActive(){
         return activityMap.containsValue(true);
+    }
+
+    public Set<Integer> getSet(){
+        HashSet<Integer> out = new HashSet<Integer>();
+        for (int n: activityMap.keySet()){
+            out.add(n);
+        }
+        return out;
+    }
+
+    @Override
+    public Object clone(){
+        try{
+            return super.clone();
+        }
+        catch (CloneNotSupportedException e){
+            return null;
+        }
     }
 
 
