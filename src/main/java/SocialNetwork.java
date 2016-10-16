@@ -54,7 +54,7 @@ public class SocialNetwork implements Graph {
      * This mthod will simulate a cascade throught the network and return a set of all nodes who switched
      *
      * @param q double between 0 and 1
-     * @return
+     * @return Set<Integer>
      */
     public HashSet<Integer> cascade(double q) {
         if (q >= 1 || q < 0) {
@@ -62,6 +62,9 @@ public class SocialNetwork implements Graph {
         }
         // initializing switched nodes with initiating nodes
         switchedNodes = new HashSet<>();
+
+        // Set all nodes but starting nodes to initial "off" position
+        zeroizeNodes();
         switchedNodes.addAll(borderNodes.getQueue());
         while (!borderNodes.isEmpty()) {
             // here node is removed from border queue
@@ -74,8 +77,7 @@ public class SocialNetwork implements Graph {
                 break;
             }
         }
-//         zeroing borderNodes
-//        borderNodes = null;
+
         return switchedNodes;
     }
 
@@ -103,13 +105,13 @@ public class SocialNetwork implements Graph {
 
                 switchedNodes.add(n.getId());
                 if (switchedPortion < 1) {
-                    // No need to check if node is already in the orderNodes, Border object will do this
+                    // No need to check if node is already in the borderNodes, Border object will do this
                     borderNodes.addNode(n.getId(), true);
                 }
             }
         }
         if (overallSwitchedFriends != node.getFriends().size()) {
-            // re-adding node back to the border queue it is still on the border
+            // re-adding node back to the border queue if it is still on the border
             borderNodes.addNode(node.getId(), switchedFriends != 0);
         }
 
@@ -130,6 +132,18 @@ public class SocialNetwork implements Graph {
         }
         borderNodes.addNode(node, true);
         nodes.get(node).doSwitch();
+    }
+
+    /**
+     * Sets all nodes except border nodes to initial "off" position
+     */
+    private void zeroizeNodes(){
+        for (Node n: nodes.values()){
+            if (!borderNodes.getSet().contains(n.getId())){
+                n.turnOff();
+            }
+        }
+
     }
 
 }

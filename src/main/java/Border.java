@@ -55,7 +55,7 @@ public class Border {
     }
 
     /**
-     * Similr to Queue interface method
+     * Similar to Queue interface method
      * @return Boolean
      */
 
@@ -70,6 +70,10 @@ public class Border {
         return activityMap.containsValue(true);
     }
 
+    /**
+     * Returns Set of all border nodes
+     * @return Set<Integer>
+     */
     public Set<Integer> getSet(){
         HashSet<Integer> out = new HashSet<Integer>();
         for (int n: activityMap.keySet()){
@@ -77,16 +81,4 @@ public class Border {
         }
         return out;
     }
-
-    @Override
-    public Object clone(){
-        try{
-            return super.clone();
-        }
-        catch (CloneNotSupportedException e){
-            return null;
-        }
-    }
-
-
 }

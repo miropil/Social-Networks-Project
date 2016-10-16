@@ -4,7 +4,6 @@ import java.util.HashSet;
 
 /**
  * This object implements network node, node neighbors are stored as Node objects
- *
  */
 public class Node {
     private int id;
@@ -17,37 +16,40 @@ public class Node {
         friends = new HashSet<Node>();
     }
 
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public HashSet<Node> getFriends(){
+    public HashSet<Node> getFriends() {
         return friends;
     }
 
     /**
      * Calculates a portion of the node neighbors who has switched out of all node neighbors
+     *
      * @return double (switched neighbors number/total neighbors number)
      */
-    public double checkSwitchedPortion(){
+    public double checkSwitchedPortion() {
         // addressing corner case of single node selected as a starter node
-        if (friends.size() == 0){
+        if (friends.size() == 0) {
             return 1;
         }
         int switchedCount = 0;
-        for (Node n: friends){
-            if (n.hasSwitched()){
+        for (Node n : friends) {
+            if (n.hasSwitched()) {
                 switchedCount++;
             }
         }
-        return (double) switchedCount/ (double)friends.size();
+        return (double) switchedCount / (double) friends.size();
     }
 
-    public boolean hasSwitched(){
+    public boolean hasSwitched() {
         return switched;
     }
 
-    public void doSwitch(){
+    public void doSwitch() {
         switched = true;
     }
+
+    public void turnOff() { switched = false; }
 }
