@@ -52,6 +52,8 @@ public class CascadingNetwork extends SocialNetwork {
             value1 = value.getFriends().contains(nodes.get(key)) ? value1 : nodes.get(key);
         }
         ignitingSet.add(value1.getId());
+        addStartingNode(value.getId());
+        addStartingNode(value1.getId());
         return findMinimalIgnitingSet(ignitingSet, q);
     }
 
@@ -65,18 +67,20 @@ public class CascadingNetwork extends SocialNetwork {
     public Set<Integer> findMinimalIgnitingSet(Set<Integer> ignitingSet, double q) {
         // Check if current ignitingSet is enough
         cascadeStartingFrom(ignitingSet, q);                                                                            // O(n^2)
+        // Report on progress:
+        System.out.println("Igniting Set: " + ignitingSet);
+        System.out.println("Igniting Set Length: " + ignitingSet.size());
+        System.out.println("Switched Nodes: " + switchedNodes);
+        System.out.println("Switched " + switchedNodes.size() + " out of " + nodes.size());
+        System.out.println("Nodes: " + nodes.keySet());
+        System.out.println("Border Nodes: " + borderNodes.getSet());
+
         if (switchedNodes.size() == nodes.keySet().size()) {
             return ignitingSet;
         }
 
         Border notSwitchedBorder = new Border();
 
-        // Report on progress:
-        System.out.println("Igniting Set: " + ignitingSet);
-        System.out.println("Igniting Set Length: " + ignitingSet.size());
-        System.out.println("Switched Nodes: " + switchedNodes);
-        System.out.println("Switched Length: " + switchedNodes.size());
-        System.out.println("Border Nodes: " + borderNodes.getSet());
 
         // remove randomly selected nodes for algorithm initialization
         for (int n : algorithmInitializingNodes) {                                                                         //O(1)

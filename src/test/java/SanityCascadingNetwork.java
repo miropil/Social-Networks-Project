@@ -42,6 +42,12 @@ public class SanityCascadingNetwork {
         setTestData();
         loadTestData();
         setExpectedOutput();
+        if (startingNodes != null){
+            for (int node: startingNodes) {
+                testData.addStartingNode(node);
+            }
+        }
+
     }
 
 
